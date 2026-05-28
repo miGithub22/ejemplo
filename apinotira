@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Usar API') {
+
+            steps {
+//Jenkins, carga credenciales temporalmente, no deja secretos disponibles todo el tiempo
+//solo existen dentro del bloque withCredentials(..) {    }
+//cuando termina las variables desaparecen, el secretodeja de exister en memoria del job
+                withCredentials([          
+                    string(         //la credencial es un texto simple porque es Secret text
+                        credentialsId: 'api-token-demo',  //busa la credencial, nombre interno del secreto
+                        variable: 'TOKEN'  // guarda el secreto en una variable llamada TOKEN pero solo temporalmente
+                    )
+                ]) {
+                    script {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Conectando a API..."
+                                curl \
+                                  -H "Authorization: Bearer $TOKEN" \
+                                  https://api.demo.com/data
+                            '''
+                        } else {
+                            bat '''
+                                echo Conectando a API...
+                                curl ^
+                                  -H "Authorization: Bearer %TOKEN%" ^
+                                  https://api.demo.com/data
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
