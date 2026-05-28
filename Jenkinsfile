@@ -3,7 +3,7 @@ pipeline{
   stages{
     stage('Build'){
       steps{
-        echo 'Building....modificado'
+        echo 'Building....modificado a las 10:26'
       }
     }
     stage('Test'){
